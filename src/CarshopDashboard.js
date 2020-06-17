@@ -76,14 +76,21 @@ class CarGrid extends Component {
     const cars = this.getCars();
 
     return (
-      <div>
-        {cars.map(function(car, i) {
-          return (
-            <div key={i}>
-              <p>{car.make}</p>
-            </div>
-          );
-        })}
+      <div id="car-grid-container">
+        <div className="columns is-multiline">
+          {cars.map(function(car, i) {
+            return (
+              <Car 
+                key={i}
+                make={car.make}
+                model={car.model}
+                year={car.year}
+                price={car.price}
+                image={car.image}
+              />
+            );
+          })}
+        </div>
       </div>
     );
   }
@@ -92,7 +99,13 @@ class CarGrid extends Component {
 class Car extends Component {
   render() {
     return (
-      <p>Car.</p>
+      <div className="column">
+        <p>{this.props.make}</p>
+        <p>{this.props.model}</p>
+        <p>{this.props.year}</p>
+        <img src={this.props.image} />
+        <p>{this.props.price}</p>
+      </div>
     );
   }
 }

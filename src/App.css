@@ -36,3 +36,12 @@
     transform: rotate(360deg);
   }
 }
+
+/* custom */
+
+.boxie {
+
+  background-color: red;
+margin: 20px
+
+}
