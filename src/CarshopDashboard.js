@@ -34,20 +34,27 @@ class CarShopDashboard extends Component {
     const filterOptions = this.state.filterOptions;
 
     let relevantCars = [];
-    console.log(this.state.cars)
-    this.state.cars.forEach(function(car) {
-      if (filterOptions.make !== 'All' && car.make !== filterOptions.make) {
-        return;
-      } else if (filterOptions.model !== 'All' && car.model !== filterOptions.model) {
-        return;
-      } else if (filterOptions.price !== 'All' && car.price !== filterOptions.price) {
-        return;
-      } else if (filterOptions.year !== 'All' && car.year !== filterOptions.year) {
-        return;
+    let cars = this.state.cars;
+
+    for (let i = 0; i < cars.length; i += 1) {
+      if (cars[i].make !== filterOptions.make && filterOptions.make !== 'All') {
+        continue;
       }
 
-      relevantCars.push(car);
-    });
+      if (cars[i].model !== filterOptions.model && filterOptions.model !== 'All') {
+        continue;
+      }     
+
+      if (cars[i].price !== Number(filterOptions.price) && filterOptions.price !== 'All') {
+        continue;
+      } 
+
+      if (cars[i].year !== Number(filterOptions.year) && filterOptions.year !== 'All') {
+        continue;
+      }
+
+      relevantCars.push(cars[i]);
+    }
 
     return relevantCars;
   };
@@ -60,10 +67,10 @@ class CarShopDashboard extends Component {
         <FilterMenu 
           filters={this.state.filterOptions}
           onFilterChange={this.onFilterChange}
-          cars={this.state.cars}
+          cars={cars}
         />
         <CarGrid 
-          cars={this.state.cars}
+          cars={cars}
           filters={this.state.filterOptions}
         />
       </div>
@@ -84,25 +91,15 @@ class FilterMenu extends Component {
     };
 
     cars.forEach(function(car) {
-      if (filters.make !== 'All' && filters.make !== car.make) {
-        return;
-      }
-
-      if (filters.model !== 'All' && filters.model !== car.model) {
-        return;
-      }
-
-      if (filters.price !== 'All' && filters.price !== car.price) {
-        return;
-      }
-
-      if (filters.year !== 'All' && filters.year !== car.year) {
-        return;
-      }
-
-      ['make', 'model', 'price', 'year'].forEach((key) => options[key].push(car[key]));
+      ['make', 'model', 'price', 'year'].forEach(function(key) { 
+        if (!options[key].includes(car[key])) {
+          options[key].push(car[key]);
+        }
+      });
     });
 
+    options.price.sort((a, b) => a - b);
+    options.year.sort((a, b) => a - b);
     return options;
   };
 
@@ -180,39 +177,13 @@ class FilterMenu extends Component {
 }
 
 class CarGrid extends Component {
-  getCars = () => {
-    const filterKeys = Object.keys(this.props.filters);
-    const filterOptions = this.props.filters;
-
-    let cars = this.props.cars.slice(0);
-    let relevantCars = [];
-
-    cars.forEach(function(car) {
-      if (filterOptions.make !== 'All' && car.make !== filterOptions.make) {
-        return;
-      } else if (filterOptions.model !== 'All' && car.model !== filterOptions.model) {
-        return;
-      } else if (filterOptions.price !== 'All' && car.price !== filterOptions.price) {
-        return;
-      } else if (filterOptions.year !== 'All' && car.year !== filterOptions.year) {
-        return;
-      }
-
-      relevantCars.push(car);
-    });
-
-    return relevantCars;
-  };
-
   render() {
-    const cars = this.getCars();
-
     return (
       <div id="car-grid-container">
         <div className="columns is-multiline">
-          {cars.map(function(car, i) {
+          {this.props.cars.map(function(car, i) {
             return (
-              <Car 
+              <Car
                 key={i}
                 make={car.make}
                 model={car.model}
