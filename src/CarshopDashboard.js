@@ -21,7 +21,12 @@ class CarShopDashboard extends Component {
   }
 
   onFilterChange = (data) => {
+    const updatedOptions = Object.assign({}, this.state.filterOptions);
+    const attr = data.attr;
+    const value = data.value;
 
+    updatedOptions[attr] = value;
+    this.setState({ filterOptions: updatedOptions });
   };
 
   getCars = () => {
@@ -29,7 +34,7 @@ class CarShopDashboard extends Component {
     const filterOptions = this.state.filterOptions;
 
     let relevantCars = [];
-
+    console.log(this.state.cars)
     this.state.cars.forEach(function(car) {
       if (filterOptions.make !== 'All' && car.make !== filterOptions.make) {
         return;
@@ -55,6 +60,7 @@ class CarShopDashboard extends Component {
         <FilterMenu 
           filters={this.state.filterOptions}
           onFilterChange={this.onFilterChange}
+          cars={this.state.cars}
         />
         <CarGrid 
           cars={this.state.cars}
@@ -69,6 +75,7 @@ class FilterMenu extends Component {
   getAllOptions = () => {
     const filters = this.props.filters;
     const cars = this.props.cars;
+
     let options = {
       make: ['All'],
       model: ['All'],
@@ -77,43 +84,94 @@ class FilterMenu extends Component {
     };
 
     cars.forEach(function(car) {
-      if (filters.make === 'All' || car.make === filters.make) {
-        options.make.push(car.make);
-      } else {
+      if (filters.make !== 'All' && filters.make !== car.make) {
         return;
       }
 
-      if (filters.model === 'All' || car.model === filters.model) {
-        options.model.push(car.model);
-      } else {
+      if (filters.model !== 'All' && filters.model !== car.model) {
         return;
       }
 
-      if (filters.price === 'All' || car.price === filters.price) {
-        options.price.push(car.price);
-      } else {
+      if (filters.price !== 'All' && filters.price !== car.price) {
         return;
       }
 
-      if (filters.year === 'All' || car.year === filters.year) {
-        options.year.push(car.year);
-      } else {
+      if (filters.year !== 'All' && filters.year !== car.year) {
         return;
       }
+
+      ['make', 'model', 'price', 'year'].forEach((key) => options[key].push(car[key]));
     });
 
     return options;
   };
 
+  handleChange = (e) => {
+    const attr = e.currentTarget.name;
+    const value = e.target.value;
+    const data = {
+      attr: attr,
+      value: value
+    };
+
+    this.props.onFilterChange(data);
+  };
+
   render() {
+    const options = this.getAllOptions();
+
     return (
       <form>
         <div className="select">
           <select 
             name="make"
-            value={this.props.filterOptions.make}
+            value={this.props.filters.make}
+            onChange={this.handleChange}
           >
-            {this.props}
+            {options.make.map(function(option, i) {
+              return (
+                <option key={i} value={option}>{option}</option>
+              );
+            })}
+          </select>
+        </div>
+        <div className="select">
+          <select 
+            name="model"
+            value={this.props.filters.model}
+            onChange={this.handleChange}
+          >
+            {options.model.map(function(option, i) {
+              return (
+                <option key={i} value={option}>{option}</option>
+              );
+            })}
+          </select>
+        </div>
+        <div className="select">
+          <select 
+            name="price"
+            value={this.props.filters.price}
+            onChange={this.handleChange}
+          >
+            {options.price.map(function(option, i) {
+              return (
+                <option key={i} value={option}>{option}</option>
+              );
+            })}
+          </select>
+        </div>
+        <div className="select">
+          <select 
+            name="year"
+            value={this.props.filters.year}
+            onChange={this.handleChange}
+          >
+            {options.year.map(function(option, i) {
+              return (
+                <option key={i} value={option}>{option}</option>
+              );
+            })}
           </select>
         </div>
       </form>
