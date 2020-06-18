@@ -24,11 +24,37 @@ class CarShopDashboard extends Component {
 
   };
 
+  getCars = () => {
+    const filterKeys = Object.keys(this.state.filterOptions);
+    const filterOptions = this.state.filterOptions;
+
+    let relevantCars = [];
+
+    this.state.cars.forEach(function(car) {
+      if (filterOptions.make !== 'All' && car.make !== filterOptions.make) {
+        return;
+      } else if (filterOptions.model !== 'All' && car.model !== filterOptions.model) {
+        return;
+      } else if (filterOptions.price !== 'All' && car.price !== filterOptions.price) {
+        return;
+      } else if (filterOptions.year !== 'All' && car.year !== filterOptions.year) {
+        return;
+      }
+
+      relevantCars.push(car);
+    });
+
+    return relevantCars;
+  };
+
   render() {
+    const cars = this.getCars();
+
     return (
       <div className="section">
         <FilterMenu 
           filters={this.state.filterOptions}
+          onFilterChange={this.onFilterChange}
         />
         <CarGrid 
           cars={this.state.cars}
@@ -40,9 +66,57 @@ class CarShopDashboard extends Component {
 }
 
 class FilterMenu extends Component {
+  getAllOptions = () => {
+    const filters = this.props.filters;
+    const cars = this.props.cars;
+    let options = {
+      make: ['All'],
+      model: ['All'],
+      year: ['All'],
+      price: ['All']
+    };
+
+    cars.forEach(function(car) {
+      if (filters.make === 'All' || car.make === filters.make) {
+        options.make.push(car.make);
+      } else {
+        return;
+      }
+
+      if (filters.model === 'All' || car.model === filters.model) {
+        options.model.push(car.model);
+      } else {
+        return;
+      }
+
+      if (filters.price === 'All' || car.price === filters.price) {
+        options.price.push(car.price);
+      } else {
+        return;
+      }
+
+      if (filters.year === 'All' || car.year === filters.year) {
+        options.year.push(car.year);
+      } else {
+        return;
+      }
+    });
+
+    return options;
+  };
+
   render() {
     return (
-      <p>Menu.</p>
+      <form>
+        <div className="select">
+          <select 
+            name="make"
+            value={this.props.filterOptions.make}
+          >
+            {this.props}
+          </select>
+        </div>
+      </form>
     );
   }
 }
